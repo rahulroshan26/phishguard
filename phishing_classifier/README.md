@@ -3,7 +3,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-3.x-000000?logo=flask)](https://flask.palletsprojects.com)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![SOC](https://img.shields.io/badge/Built%20for-SOC%20Analysts-00bfa6)](https://github.com/rahulroshan/phishguard)
+[![SOC](https://img.shields.io/badge/Built%20for-SOC%20Analysts-00bfa6)](https://github.com/rahulroshan26/phishguard)
 
 > A Python-based multi-layer email phishing classifier built for SOC analysts. Reduces false positives by **35%** and analyst triage time by **20 minutes per shift** through automated header forensics, URL reputation scoring, and body content analysis.
 
@@ -41,7 +41,7 @@ PhishGuard analyses submitted emails across **three independent detection layers
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/rahulroshan/phishguard.git
+git clone https://github.com/rahulroshan26/phishguard.git
 cd phishguard
 
 # 2. (Recommended) Create a virtual environment
@@ -238,18 +238,12 @@ python -m pytest tests/ -v --tb=short
 
 ## 👤 Author
 
-**Rahul Roshan** — Senior Cyber Threat Analyst  
+**Rahul Roshan** — Cyber Threat Analyst  
 Dell Technologies · Abu Dhabi, UAE
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Rahul%20Roshan-0077B5?logo=linkedin)](https://www.linkedin.com/in/rahulroshan)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Rahul%20Roshan-0077B5?logo=linkedin)](https://www.linkedin.com/in/rahulroshan115)
 [![TiHunt](https://img.shields.io/badge/TiHunt-tihunt.com-00bfa6)](https://tihunt.com)
 [![Email](https://img.shields.io/badge/Email-rahulroshan115%40gmail.com-D14836?logo=gmail)](mailto:rahulroshan115@gmail.com)
-
----
-
-## 📄 License
-
-MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
