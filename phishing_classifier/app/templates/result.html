@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>PhishGuard — Analysis Result</title>
+  <style>
+    :root {
+      --navy:#0f1729;--navym:#1a2340;--navyl:#1e2d50;
+      --teal:#00bfa6;--teald:#009e8a;
+      --red:#e24b4a;--amber:#f59e0b;--blue:#3b82f6;--green:#10b981;--purple:#8b5cf6;
+      --white:#f0f4f8;--muted:#8ba3be;--text:#d4e0ee;--border:#253555;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--navy);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;min-height:100vh}
+    nav{background:var(--navym);border-bottom:1px solid var(--border);
+        display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px}
+    .nav-brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700;color:var(--white)}
+    .nav-brand span.accent{color:var(--teal)}
+    .badge-soc{background:var(--teal);color:var(--navy);font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+    .nav-links a{color:var(--muted);text-decoration:none;margin-left:1.5rem;font-size:14px}
+    .nav-links a:hover{color:var(--teal)}
+
+    .wrap{max-width:960px;margin:0 auto;padding:2rem 1rem}
+
+    /* ── Verdict hero ───────────────────────────────── */
+    .verdict-hero{border-radius:14px;padding:2rem;margin-bottom:1.5rem;border:2px solid;text-align:center}
+    .verdict-hero.danger  {background:rgba(226,75,74,.08); border-color:rgba(226,75,74,.5)}
+    .verdict-hero.warning {background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.5)}
+    .verdict-hero.info    {background:rgba(59,130,246,.08); border-color:rgba(59,130,246,.5)}
+    .verdict-hero.success {background:rgba(16,185,129,.08); border-color:rgba(16,185,129,.5)}
+
+    .verdict-icon{font-size:3rem;margin-bottom:.5rem}
+    .verdict-label{font-size:2.2rem;font-weight:800;letter-spacing:2px}
+    .verdict-hero.danger  .verdict-label{color:var(--red)}
+    .verdict-hero.warning .verdict-label{color:var(--amber)}
+    .verdict-hero.info    .verdict-label{color:var(--blue)}
+    .verdict-hero.success .verdict-label{color:var(--green)}
+    .verdict-action{font-size:14px;color:var(--muted);margin-top:.4rem}
+    .verdict-score{font-size:13px;margin-top:1rem;color:var(--muted)}
+    .verdict-score strong{color:var(--white);font-size:1.1rem}
+
+    /* ── Score bar ──────────────────────────────────── */
+    .score-bar-wrap{background:var(--navyl);border-radius:20px;height:10px;margin-top:.8rem;overflow:hidden;max-width:400px;margin-inline:auto}
+    .score-bar-fill{height:100%;border-radius:20px;transition:width 1s ease}
+    .danger-fill  {background:linear-gradient(90deg,#f59e0b,#e24b4a)}
+    .warning-fill {background:linear-gradient(90deg,#f59e0b,#f59e0b)}
+    .info-fill    {background:linear-gradient(90deg,#3b82f6,#8b5cf6)}
+    .success-fill {background:linear-gradient(90deg,#10b981,#00bfa6)}
+
+    /* ── Meta row ───────────────────────────────────── */
+    .meta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:1.5rem}
+    .meta-card{background:var(--navym);border:1px solid var(--border);border-radius:10px;padding:.8rem 1rem}
+    .meta-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:3px}
+    .meta-value{font-size:13px;color:var(--white);word-break:break-all}
+
+    /* ── Section card ───────────────────────────────── */
+    .sec-card{background:var(--navym);border:1px solid var(--border);border-radius:12px;padding:1.4rem;margin-bottom:1.2rem}
+    .sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+    .sec-title{font-size:14px;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:.5px}
+    .score-badge{font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px}
+    .sb-danger  {background:rgba(226,75,74,.2); color:var(--red)}
+    .sb-warning {background:rgba(245,158,11,.2);color:var(--amber)}
+    .sb-info    {background:rgba(59,130,246,.2); color:var(--blue)}
+    .sb-success {background:rgba(16,185,129,.2); color:var(--green)}
+
+    /* ── Mini score bar ─────────────────────────────── */
+    .mini-bar-wrap{background:var(--navyl);border-radius:20px;height:6px;flex:1;overflow:hidden}
+    .mini-bar-fill{height:100%;border-radius:20px}
+    .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:.5rem}
+    .bar-lbl{font-size:12px;color:var(--muted);min-width:80px}
+    .bar-val{font-size:12px;color:var(--white);min-width:50px;text-align:right}
+
+    /* ── Findings ───────────────────────────────────── */
+    .finding{display:flex;gap:10px;padding:.65rem .8rem;border-radius:8px;margin-bottom:6px;align-items:flex-start}
+    .finding.critical{background:rgba(226,75,74,.1); border:1px solid rgba(226,75,74,.25)}
+    .finding.high    {background:rgba(226,75,74,.07); border:1px solid rgba(226,75,74,.18)}
+    .finding.medium  {background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2)}
+    .finding.low     {background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.18)}
+    .finding.clean   {background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2)}
+    .f-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;flex-shrink:0;text-transform:uppercase;white-space:nowrap}
+    .fc-critical,.fc-high{background:rgba(226,75,74,.3);color:#f88}
+    .fc-medium{background:rgba(245,158,11,.3);color:var(--amber)}
+    .fc-low   {background:rgba(59,130,246,.3); color:#7eb8ff}
+    .fc-clean {background:rgba(16,185,129,.3); color:var(--green)}
+    .f-type{font-size:11px;font-weight:700;color:var(--white);flex-shrink:0;min-width:160px}
+    .f-detail{font-size:12px;color:var(--muted);line-height:1.5}
+
+    /* ── IOC table ──────────────────────────────────── */
+    .ioc-type-label{font-size:11px;font-weight:700;text-transform:uppercase;color:var(--teal);
+                    margin-top:.8rem;margin-bottom:.4rem;letter-spacing:.4px}
+    .ioc-item{font-family:'Courier New',monospace;font-size:12px;color:#8de3d4;
+              background:#0a1120;padding:4px 8px;border-radius:5px;margin-bottom:4px;
+              word-break:break-all;display:flex;align-items:center;justify-content:space-between}
+    .copy-btn{font-size:10px;color:var(--muted);background:transparent;border:none;cursor:pointer;
+              margin-left:8px;padding:2px 5px;border-radius:4px;flex-shrink:0}
+    .copy-btn:hover{color:var(--teal);background:var(--navyl)}
+
+    /* ── Recommendations ────────────────────────────── */
+    .rec{padding:.6rem .8rem;border-radius:8px;font-size:13px;margin-bottom:6px;
+         background:var(--navyl);border:1px solid var(--border);line-height:1.5}
+
+    /* ── Buttons ────────────────────────────────────── */
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:1.5rem}
+    .btn{padding:.6rem 1.4rem;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer}
+    .btn-primary{background:var(--teal);color:var(--navy)}
+    .btn-ghost  {background:transparent;color:var(--muted);border:1px solid var(--border)}
+    .btn-ghost:hover{background:var(--navyl);color:var(--white)}
+
+    .fingerprint{font-family:'Courier New',monospace;font-size:11px;color:var(--muted)}
+    .ts{font-size:11px;color:var(--muted)}
+
+    .no-findings{font-size:13px;color:var(--green);padding:.5rem 0}
+    .empty-ioc{font-size:12px;color:var(--muted);font-style:italic}
+
+    /* URL detail table */
+    .url-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:.5rem}
+    .url-table th{text-align:left;padding:6px 8px;color:var(--muted);font-weight:600;
+                  text-transform:uppercase;font-size:10px;letter-spacing:.4px;border-bottom:1px solid var(--border)}
+    .url-table td{padding:6px 8px;border-bottom:1px solid #1a2340;word-break:break-all;color:var(--text)}
+    .url-table tr:last-child td{border-bottom:none}
+
+    tabs{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+    .tab-btn{font-size:12px;padding:4px 12px;border:1px solid var(--border);border-radius:6px;
+             background:transparent;color:var(--muted);cursor:pointer}
+    .tab-btn.active{background:rgba(0,191,166,.15);color:var(--teal);border-color:var(--teal)}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">🛡️&nbsp;<span>Phish<span class="accent">Guard</span></span><span class="badge-soc">SOC Tool</span></div>
+  <div class="nav-links">
+    <a href="/">← New Analysis</a>
+    <a href="/samples">Samples</a>
+    <a href="https://github.com/rahulroshan/phishguard" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+{% set r = result %}
+{% set v = r.verdict_class %}
+
+<div class="wrap">
+
+  <!-- ═══ VERDICT HERO ════════════════════════════════════════ -->
+  <div class="verdict-hero {{ v }}">
+    <div class="verdict-icon">{{ r.verdict_icon }}</div>
+    <div class="verdict-label">{{ r.verdict }}</div>
+    <div class="verdict-action">{{ r.verdict_action }}</div>
+    <div class="verdict-score">Risk Score: <strong>{{ r.total_score }} / 100</strong></div>
+    <div class="score-bar-wrap" style="margin-top:.8rem">
+      <div class="score-bar-fill {{ v }}-fill" style="width:{{ r.total_score }}%"></div>
+    </div>
+    <div style="margin-top:.5rem;font-size:11px;color:var(--muted)">
+      <span class="fingerprint">SHA-256: {{ r.fingerprint[:32] }}...</span>
+      &nbsp;|&nbsp;
+      <span class="ts">{{ r.timestamp }}</span>
+    </div>
+  </div>
+
+  <!-- ═══ EMAIL META ══════════════════════════════════════════ -->
+  <div class="meta-grid">
+    {% for key, val in r.email_meta.items() %}
+    <div class="meta-card">
+      <div class="meta-label">{{ key }}</div>
+      <div class="meta-value">{{ val[:80] if val|length > 80 else val }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ═══ SCORE BREAKDOWN ═════════════════════════════════════ -->
+  <div class="sec-card">
+    <div class="sec-header">
+      <div class="sec-title">📊 Score Breakdown</div>
+      <span class="score-badge sb-{{ v }}">Total: {{ r.total_score }}/100</span>
+    </div>
+    {% for key, label, max_s in [('header','Header Analysis',35),('url','URL Reputation',40),('body','Body Analysis',25)] %}
+    {% set sub = r.breakdown[key] %}
+    {% set pct = (sub.score / max_s * 100)|int %}
+    {% set col = '#e24b4a' if pct >= 70 else '#f59e0b' if pct >= 40 else '#3b82f6' %}
+    <div class="bar-row">
+      <span class="bar-lbl">{{ label }}</span>
+      <div class="mini-bar-wrap">
+        <div class="mini-bar-fill" style="width:{{ pct }}%;background:{{ col }}"></div>
+      </div>
+      <span class="bar-val">{{ sub.score }}/{{ max_s }}</span>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- ═══ FINDINGS ════════════════════════════════════════════ -->
+  {% for section_key, section_label in [('header','📧 Header Findings'),('url','🔗 URL Findings'),('body','📝 Body Findings')] %}
+  {% set sub = r.breakdown[section_key] %}
+  <div class="sec-card">
+    <div class="sec-header">
+      <div class="sec-title">{{ section_label }}</div>
+      <span class="score-badge sb-{{ 'danger' if sub.score > (sub.max_score*0.6) else 'warning' if sub.score > (sub.max_score*0.3) else 'success' }}">
+        {{ sub.score }}/{{ sub.max_score }} pts
+      </span>
+    </div>
+    {% if sub.findings %}
+      {% for f in sub.findings %}
+      <div class="finding {{ f.severity }}">
+        <span class="f-badge fc-{{ f.severity }}">{{ f.severity }}</span>
+        <span class="f-type">{{ f.type }}</span>
+        <span class="f-detail">{{ f.detail }}</span>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="no-findings">✅ No issues detected in this layer.</div>
+    {% endif %}
+
+    {% if section_key == 'url' and sub.url_details %}
+    <div style="margin-top:1rem;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:.5rem">URL Details</div>
+    <table class="url-table">
+      <thead><tr><th>URL</th><th>Score</th></tr></thead>
+      <tbody>
+      {% for ud in sub.url_details %}
+      <tr>
+        <td style="max-width:500px;font-family:'Courier New',monospace;color:#8de3d4">{{ ud.url }}</td>
+        <td><span style="color:{{ '#e24b4a' if ud.score >= 15 else '#f59e0b' if ud.score >= 8 else '#10b981' }}">{{ ud.score }}</span></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+  {% endfor %}
+
+  <!-- ═══ IOCs ════════════════════════════════════════════════ -->
+  <div class="sec-card">
+    <div class="sec-header">
+      <div class="sec-title">🎯 Extracted IOCs</div>
+      <span class="score-badge sb-info">For SIEM ingestion</span>
+    </div>
+    {% set iocs = r.iocs %}
+    {% for ioc_type, label in [('urls','URLs'),('ips','IP Addresses'),('domains','Domains'),('hashes','Hashes'),('emails','Email Addresses')] %}
+    {% if iocs[ioc_type] %}
+    <div class="ioc-type-label">{{ label }}</div>
+    {% for item in iocs[ioc_type] %}
+    <div class="ioc-item">
+      <span>{{ item }}</span>
+      <button class="copy-btn" onclick="navigator.clipboard.writeText('{{ item }}');this.textContent='✓'">Copy</button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endfor %}
+    {% if not (iocs.urls or iocs.ips or iocs.domains or iocs.hashes or iocs.emails) %}
+    <div class="empty-ioc">No IOCs extracted from this email.</div>
+    {% endif %}
+  </div>
+
+  <!-- ═══ RECOMMENDATIONS ═════════════════════════════════════ -->
+  <div class="sec-card">
+    <div class="sec-header">
+      <div class="sec-title">✅ SOC Recommendations</div>
+    </div>
+    {% for rec in r.recommendations %}
+    <div class="rec">{{ rec }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- ═══ ACTIONS ═════════════════════════════════════════════ -->
+  <div class="btn-row">
+    <a href="/"><button class="btn btn-primary">🔍 Analyse Another Email</button></a>
+    <button class="btn btn-ghost" onclick="window.print()">🖨 Print Report</button>
+    <button class="btn btn-ghost" onclick="copyJSON()">📋 Copy JSON</button>
+  </div>
+
+</div>
+
+<script>
+const resultJSON = {{ result | tojson }};
+function copyJSON() {
+  navigator.clipboard.writeText(JSON.stringify(resultJSON, null, 2));
+  alert('JSON copied to clipboard');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><title>PhishGuard — Sample Emails</title>
+  <style>
+    :root{--navy:#0f1729;--navym:#1a2340;--teal:#00bfa6;--muted:#8ba3be;--text:#d4e0ee;--border:#253555;--white:#f0f4f8}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--navy);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;min-height:100vh}
+    nav{background:var(--navym);border-bottom:1px solid var(--border);display:flex;align-items:center;
+        justify-content:space-between;padding:0 2rem;height:60px}
+    .nav-brand{font-size:20px;font-weight:700;color:var(--white)}.accent{color:var(--teal)}
+    .nav-links a{color:var(--muted);text-decoration:none;margin-left:1.5rem;font-size:14px}
+    .wrap{max-width:900px;margin:0 auto;padding:2rem 1rem}
+    h2{color:var(--white);margin-bottom:.5rem}
+    p{color:var(--muted);font-size:13px;margin-bottom:1.5rem}
+    .sample-card{background:var(--navym);border:1px solid var(--border);border-radius:12px;padding:1.2rem;margin-bottom:1rem}
+    .s-name{font-weight:700;color:var(--teal);margin-bottom:.5rem;font-size:14px}
+    pre{font-family:'Courier New',monospace;font-size:11px;color:#8ba3be;white-space:pre-wrap;
+        background:#0a1120;padding:.8rem;border-radius:6px;max-height:200px;overflow:auto;margin-bottom:.8rem}
+    form{display:inline}
+    .btn{padding:.5rem 1.2rem;border-radius:7px;border:none;font-size:13px;font-weight:600;cursor:pointer;
+         background:var(--teal);color:var(--navy)}
+    .empty{color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-brand">🛡️ Phish<span class="accent">Guard</span></div>
+  <div class="nav-links"><a href="/">← Analyser</a></div>
+</nav>
+<div class="wrap">
+  <h2>Sample Emails</h2>
+  <p>Pre-loaded sample emails for testing. Click Analyse to run through the classifier.</p>
+  {% if samples %}
+    {% for s in samples %}
+    <div class="sample-card">
+      <div class="s-name">📄 {{ s.name }}</div>
+      <pre>{{ s.content[:500] }}{% if s.content|length > 500 %}...{% endif %}</pre>
+      <form action="/analyse" method="POST">
+        <input type="hidden" name="email_content" value="{{ s.content }}">
+        <button type="submit" class="btn">🔍 Analyse This Email</button>
+      </form>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="empty">No sample files found in data/samples/. Add .eml or .txt files there to see them here.</p>
+  {% endif %}
+</div>
+</body>
+</html>

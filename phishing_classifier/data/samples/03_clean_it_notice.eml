@@ -1,0 +1,25 @@
+From: "IT Operations" <it-ops@company.com>
+To: all-staff@company.com
+Subject: Scheduled Maintenance Window - Saturday 21 Jun 2026
+Date: Thu, 18 Jun 2026 10:00:00 +0000
+Authentication-Results: spf=pass smtp.mailfrom=company.com; dkim=pass; dmarc=pass
+Message-ID: <maint-20260618@company.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+
+Hi Team,
+
+This is a reminder that we have a scheduled maintenance window this Saturday (21 June 2026) from 02:00 to 04:00 AM UTC.
+
+During this window, the following services may be briefly unavailable:
+- Internal VPN
+- Email relay (outbound only, ~15 min window)
+- SharePoint document portal
+
+No action is required from you. If you have time-sensitive work, please plan around this window.
+
+For questions, contact the IT helpdesk at helpdesk@company.com or extension 5500.
+
+Regards,
+IT Operations Team
+company.com

@@ -1,0 +1,42 @@
+From: "PayPal Security Team" <security-noreply@paypa1-verify.xyz>
+To: john.doe@company.com
+Subject: URGENT ACTION REQUIRED: Your PayPal Account Has Been Suspended
+Date: Mon, 15 Jun 2026 09:23:00 +0000
+Reply-To: support@free-helpdesk.tk
+Received: from mail.malicious-host.com ([194.213.18.130]) by mx.company.com
+Authentication-Results: mx.company.com; spf=fail smtp.mailfrom=paypa1-verify.xyz; dkim=none; dmarc=fail
+Message-ID: <ph1sh1ng@malicious-host.com>
+X-Mailer: PHPMailer 6.5.0 (https://github.com/PHPMailer/PHPMailer)
+MIME-Version: 1.0
+Content-Type: text/html; charset=UTF-8
+
+<html><body style="font-family:Arial">
+<p>Dear Customer,</p>
+
+<p>We have noticed UNUSUAL SIGN-IN ACTIVITY on your PayPal account. Your account has been <strong>SUSPENDED IMMEDIATELY</strong> for your security.</p>
+
+<p>To restore access and verify your identity, you must complete the following steps <strong>WITHIN 24 HOURS</strong> or your account will be permanently closed:</p>
+
+<ol>
+<li>Click the secure verification link below</li>
+<li>Enter your PayPal username and password</li>
+<li>Provide your credit card details for identity verification</li>
+</ol>
+
+<p style="text-align:center">
+<a href="http://paypa1-secure-verify.xyz/login/confirm?token=USER291889&redirect=dashboard">
+CLICK HERE TO VERIFY YOUR ACCOUNT NOW
+</a>
+</p>
+
+<p>Additional verification URLs if the link above does not work:</p>
+<ul>
+<li>http://bit.ly/paypal-verify-now</li>
+<li>http://194.213.18.130/verify/account</li>
+</ul>
+
+<p>If you do not verify within 24 hours, your account will be permanently restricted.</p>
+
+<p>PayPal Security Team<br>
+<small>© 2026 PayPal Inc. All rights reserved.</small></p>
+</body></html>

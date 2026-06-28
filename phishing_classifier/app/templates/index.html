@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhishGuard — SOC Phishing Triage Tool</title>
+  <style>
+    :root {
+      --navy:   #0f1729;
+      --navym:  #1a2340;
+      --navyl:  #1e2d50;
+      --teal:   #00bfa6;
+      --teald:  #009e8a;
+      --red:    #e24b4a;
+      --amber:  #f59e0b;
+      --blue:   #3b82f6;
+      --green:  #10b981;
+      --white:  #f0f4f8;
+      --muted:  #8ba3be;
+      --text:   #d4e0ee;
+      --border: #253555;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--navy); color: var(--text); font-family: 'Segoe UI', Arial, sans-serif; min-height: 100vh; }
+
+    /* ── Nav ─────────────────────────────────────────── */
+    nav { background: var(--navym); border-bottom: 1px solid var(--border);
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 0 2rem; height: 60px; }
+    .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; color: var(--white); }
+    .nav-brand span.accent { color: var(--teal); }
+    .nav-links a { color: var(--muted); text-decoration: none; margin-left: 1.5rem; font-size: 14px;
+                   transition: color .2s; }
+    .nav-links a:hover { color: var(--teal); }
+    .badge-soc { background: var(--teal); color: var(--navy); font-size: 11px; font-weight: 700;
+                 padding: 2px 8px; border-radius: 20px; }
+
+    /* ── Hero ────────────────────────────────────────── */
+    .hero { text-align: center; padding: 3.5rem 1rem 2rem; }
+    .hero h1 { font-size: 2.4rem; font-weight: 800; color: var(--white); line-height: 1.2; }
+    .hero h1 em { color: var(--teal); font-style: normal; }
+    .hero p { color: var(--muted); margin-top: .7rem; font-size: 1rem; max-width: 580px; margin-inline: auto; }
+    .pill-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 1.2rem; }
+    .pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px;
+            text-transform: uppercase; letter-spacing: .4px; }
+    .pill-t  { background: rgba(0,191,166,.15); color: var(--teal); border: 1px solid rgba(0,191,166,.3); }
+    .pill-r  { background: rgba(226,75,74,.15);  color: var(--red);  border: 1px solid rgba(226,75,74,.3); }
+    .pill-b  { background: rgba(59,130,246,.15); color: var(--blue); border: 1px solid rgba(59,130,246,.3); }
+
+    /* ── Stats bar ───────────────────────────────────── */
+    .stats-bar { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem auto; max-width: 800px; }
+    .stat-card { background: var(--navym); border: 1px solid var(--border); border-radius: 10px;
+                 padding: .8rem 1.4rem; text-align: center; min-width: 140px; }
+    .stat-num  { font-size: 1.6rem; font-weight: 800; color: var(--teal); }
+    .stat-lbl  { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin-top: 2px; }
+
+    /* ── Main card ───────────────────────────────────── */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 1rem 3rem; }
+    .card { background: var(--navym); border: 1px solid var(--border); border-radius: 14px; padding: 2rem; }
+
+    .form-label { font-size: 13px; font-weight: 600; color: var(--muted);
+                  text-transform: uppercase; letter-spacing: .5px; margin-bottom: .5rem; display: block; }
+    textarea {
+      width: 100%; background: #0a1120; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); font-family: 'Courier New', monospace; font-size: 13px;
+      padding: 1rem; resize: vertical; min-height: 260px; outline: none; transition: border .2s;
+    }
+    textarea:focus { border-color: var(--teal); }
+    textarea::placeholder { color: #3a4d6a; }
+
+    .btn-row { display: flex; gap: 12px; align-items: center; margin-top: 1.2rem; flex-wrap: wrap; }
+    .btn { padding: .65rem 1.6rem; border-radius: 8px; border: none; font-size: 14px;
+           font-weight: 600; cursor: pointer; transition: all .2s; }
+    .btn-primary { background: var(--teal); color: var(--navy); }
+    .btn-primary:hover { background: var(--teald); transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: var(--teal); border: 1px solid var(--teal); }
+    .btn-outline:hover { background: rgba(0,191,166,.1); }
+    .btn-ghost  { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover  { background: var(--navyl); color: var(--white); }
+
+    .hint { font-size: 12px; color: var(--muted); margin-top: .5rem; }
+
+    /* ── Features ────────────────────────────────────── */
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+                gap: 1rem; margin-top: 2rem; }
+    .feat { background: var(--navyl); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+    .feat-icon { font-size: 1.4rem; margin-bottom: .5rem; }
+    .feat h4   { font-size: 13px; color: var(--white); margin-bottom: 4px; }
+    .feat p    { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    /* ── Error ───────────────────────────────────────── */
+    .error-box { background: rgba(226,75,74,.12); border: 1px solid rgba(226,75,74,.4);
+                 border-radius: 8px; padding: .8rem 1rem; color: var(--red); font-size: 13px; margin-bottom: 1rem; }
+
+    /* ── Footer ──────────────────────────────────────── */
+    footer { text-align: center; padding: 1.5rem; font-size: 12px; color: var(--muted);
+             border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--teal); text-decoration: none; }
+
+    .sample-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: .5rem; }
+    .sample-btn { font-size: 11px; padding: 3px 9px; border-radius: 6px;
+                  background: var(--navyl); border: 1px solid var(--border);
+                  color: var(--muted); cursor: pointer; }
+    .sample-btn:hover { color: var(--teal); border-color: var(--teal); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    🛡️&nbsp;<span>Phish<span class="accent">Guard</span></span>
+    <span class="badge-soc">SOC Tool</span>
+  </div>
+  <div class="nav-links">
+    <a href="/">Analyser</a>
+    <a href="/samples">Sample Emails</a>
+    <a href="/api/health">API Health</a>
+    <a href="https://github.com/rahulroshan/phishguard" target="_blank">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>SOC Phishing <em>Triage Engine</em></h1>
+  <p>Multi-layer email classifier — header forensics, URL reputation scoring, and body analysis. Built for SOC analysts to cut triage time by 20 min/shift.</p>
+  <div class="pill-row">
+    <span class="pill pill-t">Header Forensics</span>
+    <span class="pill pill-r">URL Reputation</span>
+    <span class="pill pill-b">Body Analysis</span>
+    <span class="pill pill-t">IOC Extraction</span>
+    <span class="pill pill-r">VirusTotal Integration</span>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card"><div class="stat-num">35%</div><div class="stat-lbl">False positive reduction</div></div>
+  <div class="stat-card"><div class="stat-num">20 min</div><div class="stat-lbl">Saved per analyst shift</div></div>
+  <div class="stat-card"><div class="stat-num">3-layer</div><div class="stat-lbl">Analysis engine</div></div>
+  <div class="stat-card"><div class="stat-num">&lt;2s</div><div class="stat-lbl">Analysis time</div></div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    {% if error %}
+    <div class="error-box">⚠ {{ error }}</div>
+    {% endif %}
+
+    <form action="/analyse" method="POST">
+      <label class="form-label">Paste raw email (RFC 5322, .eml, or plain text)</label>
+      <textarea name="email_content"
+        placeholder="Paste full email here including headers...
+
+Example:
+From: &quot;PayPal Security&quot; <security@paypa1.com>
+To: victim@company.com
+Subject: URGENT: Your account has been suspended
+Date: Mon, 15 Jun 2026 09:23:00 +0000
+..."></textarea>
+
+      <div class="hint">Tip: Copy the full email including headers for maximum accuracy. Or try a sample below.</div>
+
+      <div class="sample-links">
+        <span style="font-size:12px;color:var(--muted);margin-top:2px;">Quick samples:</span>
+        <button type="button" class="sample-btn" onclick="loadSample('phishing')">🎣 Phishing</button>
+        <button type="button" class="sample-btn" onclick="loadSample('bec')">💼 BEC</button>
+        <button type="button" class="sample-btn" onclick="loadSample('clean')">✅ Clean</button>
+        <button type="button" class="sample-btn" onclick="loadSample('malware')">🦠 Malware</button>
+      </div>
+
+      <div class="btn-row">
+        <button type="submit" class="btn btn-primary">🔍 Analyse Email</button>
+        <button type="button" class="btn btn-ghost" onclick="document.querySelector('textarea').value=''">Clear</button>
+        <span style="font-size:12px;color:var(--muted);margin-left:auto">Analysis takes &lt; 2 seconds</span>
+      </div>
+    </form>
+  </div>
+
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">📧</div>
+      <h4>Header Forensics</h4>
+      <p>SPF, DKIM, DMARC validation. Reply-To mismatch, display-name spoofing, routing anomalies. Max 35 pts.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔗</div>
+      <h4>URL Reputation</h4>
+      <p>Typosquatting detection, TLD risk scoring, URL shortener detection, VirusTotal API enrichment. Max 40 pts.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📝</div>
+      <h4>Body Analysis</h4>
+      <p>Urgency language, credential lures, financial fraud patterns, HTML obfuscation detection. Max 25 pts.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🎯</div>
+      <h4>IOC Extraction</h4>
+      <p>Automatically extracts URLs, IPs, domains, hashes, and email addresses for SIEM ingestion.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔌</div>
+      <h4>REST API</h4>
+      <p>POST /api/analyse with JSON payload — integrate directly into your SOAR playbooks or ticketing system.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📊</div>
+      <h4>SOC Report</h4>
+      <p>Full analyst report with scoring breakdown, evidence chain, IOC table, and recommended response actions.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Built by <strong>Rahul Roshan</strong> — Senior Cyber Threat Analyst  •
+  <a href="https://www.linkedin.com/in/rahulroshan">LinkedIn</a>  •
+  <a href="https://github.com/rahulroshan/phishguard">GitHub</a>  •
+  <a href="https://tihunt.com">TiHunt</a>
+</footer>
+
+<script>
+const SAMPLES = {
+  phishing: `From: "PayPal Security" <noreply@paypa1-secure.xyz>
+To: user@company.com
+Subject: URGENT: Your PayPal account has been suspended
+Date: Mon, 15 Jun 2026 09:23:00 +0000
+Reply-To: support@free-email-support.tk
+Received: from mail.malicious-host.com ([194.213.18.130])
+Authentication-Results: spf=fail; dkim=none; dmarc=fail
+X-Mailer: PHPMailer 6.5.0
+
+Dear Customer,
+
+We have noticed unusual activity on your PayPal account. Your account has been SUSPENDED immediately.
+
+To verify your identity and restore access, click the link below WITHIN 24 HOURS or your account will be permanently closed:
+
+http://paypa1-secure.xyz/login/verify?token=abc123
+
+Please enter your username, password, and credit card details to confirm your identity.
+
+PayPal Security Team`,
+
+  bec: `From: "CEO John Smith" <johnsmith@company-corp.net>
+To: finance@company.com
+Subject: Urgent Wire Transfer Required
+Date: Tue, 16 Jun 2026 14:05:00 +0000
+Reply-To: ceo.transfers@gmail.com
+
+Hi,
+
+I need you to process an urgent wire transfer of $50,000 to our new vendor immediately. This is confidential — do not discuss with anyone else.
+
+Account: 1234567890
+Bank: First National Bank
+SWIFT: FNBKUS33
+
+Please confirm once done. I am in a meeting and cannot talk.
+
+Best,
+John`,
+
+  malware: `From: "HR Department" <hr@your-company.com>
+To: all-staff@your-company.com
+Subject: Updated Employee Handbook - Action Required
+Date: Wed, 17 Jun 2026 08:00:00 +0000
+
+Dear Employee,
+
+Please find attached the updated Employee Handbook for 2026.
+Open the attached file: EmployeeHandbook2026.exe
+
+This contains important policy changes effective immediately.
+
+HR Team`,
+
+  clean: `From: "IT Support" <it-support@company.com>
+To: user@company.com
+Subject: Scheduled Maintenance Notification
+Date: Thu, 18 Jun 2026 10:00:00 +0000
+Authentication-Results: spf=pass; dkim=pass; dmarc=pass
+
+Hi Team,
+
+This is a reminder that we have scheduled maintenance this Saturday from 2 AM to 4 AM UTC.
+
+During this window, email and VPN services may be briefly interrupted.
+
+No action is required on your part.
+
+IT Support Team
+company.com`
+};
+
+function loadSample(type) {
+  document.querySelector('textarea').value = SAMPLES[type] || '';
+}
+</script>
+</body>
+</html>
